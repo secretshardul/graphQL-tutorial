@@ -20,7 +20,7 @@ It performs 3 tasks
 2. Define relation between object types
 3. Define **root query**: Root query specifies how user can query data.
 
-# Querying
+## Querying
 Enable **graphiql** GUI for graphql
 ```js
 app.use('/graphql', graphqlHTTP({
@@ -48,7 +48,7 @@ app.use('/graphql', graphqlHTTP({
 }
 ```
 
-# Relations
+## Relations
 We can create a relationship between 2 GraphQL types by nesting them:
 ```js
 const BookType = new GraphQLObjectType({
@@ -82,7 +82,7 @@ Here we can query about a book's author by nesting 'AuthorType' in 'BookType'
 }
 ```
 
-# Lists
+## Lists
 1. Used to query multiple objects instead of a single object from **root query**. Here it's not necessary to accept args()
 ```js
         books: { //list of all books
@@ -140,3 +140,62 @@ const AuthorType = new GraphQLObjectType({
 }
 ```
 
+## MongoDB connection
+1. Install mongoose and connect to mongoDB
+```
+mongoose.connect(`connection string`)
+```
+
+2. Create models for author(`/models/author.js`) and book(`/models/book.js`). Import these to ```schema.js```
+
+## Mutation
+GraphQL mutations do 2 things
+    1. Modify data in a data store
+    2. Return back a value
+While queries are used for reads, mutations are used for creating, updating or deleting data.
+```js
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addAuthor: {
+            type: AuthorType,
+            args: {
+                name: { type: GraphQLString },
+                age: { type: GraphQLInt }
+            },
+            resolve(parent, args) {
+                //add to schema
+                const author = new Author({
+                    name: args.name,
+                    age: args.age
+                })
+                return author.save() //mongoDB saves data and returns it back as response
+                //response must be returned if user wants to view the data
+            }
+        }
+    }
+})
+
+module.exports = new GraphQLSchema({
+    query: RootQuery, //RootQuery used by express-graphql middleware
+    mutation: Mutation
+})
+```
+Mutations are defined separately from root query.
+
+**Example**: Add author and return saved name, age and ID
+```
+mutation {
+  addAuthor(name: "jack", age: 10){
+    name
+    age
+    id
+  }
+}
+```
+
+## Non-null values
+Use ```GraphQLNonNull``` to make values non-nullable. Example usage- prevent adding author with missing name.
+```js
+type: new GraphQLNonNull(GraphQLString)
+```
