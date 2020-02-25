@@ -81,3 +81,62 @@ Here we can query about a book's author by nesting 'AuthorType' in 'BookType'
     }
 }
 ```
+
+# Lists
+1. Used to query multiple objects instead of a single object from **root query**. Here it's not necessary to accept args()
+```js
+        books: { //list of all books
+            type: new GraphQLList(BookType),
+            //no args parameter
+            resolve(parent, args) {
+                return books
+            }
+        },
+```
+
+Querying all books
+```
+{
+    books{
+        name
+        genre
+        author{
+            name
+            age
+        }
+    }
+}
+```
+
+2. An object type can have a field returning a list of another object type. Eg. 'author' query returning list of books by that author.
+
+```js
+const AuthorType = new GraphQLObjectType({
+    name: 'Author',
+    fields: () => ({
+        id: { type: GraphQLID },
+        name: { type: GraphQLString },
+        age: { type: GraphQLInt },
+        books: {
+            type: new GraphQLList(BookType), //GraphQLList() of BookType
+            resolve(parent, args){
+                return _.filter(books, { authorId: parent.id }) //return list with matching ID
+            }
+        }
+    })
+})
+```
+
+```graphql
+{
+    author(id: 1){
+        name
+        age
+        books{
+            name
+            genre
+        }
+    }
+}
+```
+
