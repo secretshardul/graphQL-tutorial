@@ -199,3 +199,10 @@ Use ```GraphQLNonNull``` to make values non-nullable. Example usage- prevent add
 ```js
 type: new GraphQLNonNull(GraphQLString)
 ```
+
+# React client
+1. Setup using ```create-react-app client```. Start dev server using ```npm start```. Install npm modules
+```shell script
+npm install apollo-boost graphql react-apollo
+```
+2. Create BookList component

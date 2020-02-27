@@ -4,6 +4,7 @@ const schema = require('./schema/schema')
 const app = express()
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
+const cors =  require('cors')
 dotenv.config()
 
 // console.log(process.env.MONGODB_PASSWORD)
@@ -16,6 +17,8 @@ mongoose.connect(
 )
 
 mongoose.connection.once('open', () => {console.log('connected to MongoDB')})
+
+app.use(cors()) //allow CORS
 
 app.use('/graphql', graphqlHTTP({
     //ES6: {foo: foo} can be shortened as {foo}
