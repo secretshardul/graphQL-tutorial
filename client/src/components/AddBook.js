@@ -27,7 +27,13 @@ class AddBook extends Component {
     submitForm(event){
         event.preventDefault();
         console.log(this.state);
-        this.props.addBookMutation();
+        this.props.addBookMutation({
+            variables: {
+                name: this.state.name,
+                genre: this.state.genre,
+                authorId: this.state.authorId
+            }
+        });
     }
     render() {
         console.log(this.props);
